@@ -108,16 +108,26 @@ public:
         }
 
         ~Guard() {
+            this->unlock();
+        }
+
+        // Unlocks the mutex. Any access to this `Guard` afterwards invokes undefined behavior.
+        void unlock() {
+            if (!alreadyUnlocked) {
 #ifdef ASP_DEBUG
-            mtx.dlGuard.unlock();
+                mtx.dlGuard.unlock();
 #endif
-            mtx.mtx.unlock();
+                mtx.mtx.unlock();
+
+                alreadyUnlocked = true;
+            }
         }
 
         Guard(const Guard&) = delete;
         Guard& operator=(const Guard&) = delete;
     private:
         Mutex& mtx;
+        bool alreadyUnlocked = false;
     };
 
     Guard lock() {
