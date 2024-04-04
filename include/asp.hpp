@@ -3,11 +3,8 @@
 */
 
 #pragma once
-#include "asp/sync/Atomic.hpp"
-#include "asp/sync/Mutex.hpp"
-#include "asp/sync/Channel.hpp"
-#include "asp/thread/Thread.hpp"
-#include "asp/thread/ThreadPool.hpp"
+#include "asp/sync.hpp"
+#include "asp/thread.hpp"
 #include "asp/Log.hpp"
 
 namespace asp {
