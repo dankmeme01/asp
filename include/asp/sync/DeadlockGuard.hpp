@@ -1,6 +1,7 @@
 #pragma once
 #include "../config.hpp"
 #include <thread>
+#include <mutex>
 
 namespace asp::sync {
 
