@@ -39,10 +39,19 @@ public:
         }
 
         ~Guard() {
+            this->unlock();
+        }
+
+        // Unlocks the mutex. Any access to this `Guard` afterwards invokes undefined behavior.
+        void unlock() {
+            if (!alreadyUnlocked) {
 #ifdef ASP_DEBUG
-            mtx.dlGuard.unlock();
+                mtx.dlGuard.unlock();
 #endif
-            mtx.mtx.unlock();
+                mtx.mtx.unlock();
+
+                alreadyUnlocked = true;
+            }
         }
 
         Inner& operator*() {
@@ -64,6 +73,7 @@ public:
         }
     private:
         const Mutex& mtx;
+        bool alreadyUnlocked = false;
     };
 
     Guard lock() const {
@@ -97,7 +107,7 @@ public:
 
     class Guard {
     public:
-        Guard(Mutex& mtx) : mtx(mtx) {
+        Guard(const Mutex& mtx) : mtx(mtx) {
 #ifdef ASP_DEBUG
             mtx.dlGuard.lockAttempt();
             mtx.mtx.lock();
@@ -126,7 +136,7 @@ public:
         Guard(const Guard&) = delete;
         Guard& operator=(const Guard&) = delete;
     private:
-        Mutex& mtx;
+        const Mutex& mtx;
         bool alreadyUnlocked = false;
     };
 
@@ -134,9 +144,9 @@ public:
         return Guard(*this);
     }
 private:
-    std::mutex mtx;
+    mutable std::mutex mtx;
 #ifdef ASP_DEBUG
-    DeadlockGuard dlGuard;
+    mutable DeadlockGuard dlGuard;
 #endif
 };
 
