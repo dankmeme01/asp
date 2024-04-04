@@ -1,7 +1,7 @@
 #include <asp/sync/DeadlockGuard.hpp>
 
 #include <stdexcept>
-#include <thread>
+#include <mutex>
 
 namespace asp::sync {
 
