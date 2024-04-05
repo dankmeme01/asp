@@ -7,6 +7,7 @@
 #include <functional>
 #include <memory>
 #include <thread>
+#include <stdexcept>
 
 namespace asp::thread {
 
