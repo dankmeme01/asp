@@ -1,7 +1,11 @@
 #include <asp/config.hpp>
+#include <asp/Log.hpp>
 #include <stdexcept>
 #include <string>
 
 void asp::detail::assertionFail(const char* message) {
-    throw std::runtime_error(std::string("asp assertion failed: ") + message);
+    auto msg = std::string("asp assertion failed: ") + message;
+
+    asp::log(LogLevel::Error, msg);
+    throw std::runtime_error(msg);
 }

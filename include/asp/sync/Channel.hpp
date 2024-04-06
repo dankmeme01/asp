@@ -51,6 +51,12 @@ public:
         return doPop(queue.data);
     }
 
+    // Blocks until messages are available, does not actually pop any messages from the channel.
+    template <typename Rep, typename Period>
+    void waitForMessages(std::chrono::duration<Rep, Period> timeout) {
+        
+    }
+
     // Obtains the element at the front of the queue, throws if the channel is empty.
     T popNow() {
         auto q = queue.lock();

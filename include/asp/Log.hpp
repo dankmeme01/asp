@@ -11,4 +11,8 @@ namespace asp {
 
     void setLogFunction(std::function<void(LogLevel, const std::string_view)>&& f);
     void log(LogLevel level, const std::string_view message);
+
+    inline void trace(const std::string_view message) {
+        log(LogLevel::Trace, message);
+    }
 }
