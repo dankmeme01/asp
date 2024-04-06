@@ -24,30 +24,34 @@ private:
 
     RuntimeSettings settings;
     std::unique_ptr<thread::ThreadPool> tpool;
+    std::mutex mtx;
     sync::AtomicBool launched = false;
 };
 
 /* RuntimeImpl implementation */
 
 void RuntimeImpl::launch() {
-    ASP_ALWAYS_ASSERT(!launched, "cannot launch the same instance of Runtime twice");
-    asp::trace("launching runtime");
-    launched = true;
+    std::unique_lock lock(mtx);
 
-    asp::trace("aa");
+    ASP_ALWAYS_ASSERT(!launched, "cannot launch the same instance of Runtime twice");
+
     if (settings.threadCount == 0) {
         settings.threadCount = std::thread::hardware_concurrency();
     }
 
-    asp::trace("bb");
     ASP_ALWAYS_ASSERT(settings.threadCount != 0, "failed to determine the maximum amount of threads on the target machine");
     ASP_ALWAYS_ASSERT(settings.threadCount <= 1024, "cannot launch a Runtime with over 1024 threads");
 
     tpool = std::make_unique<thread::ThreadPool>(settings.threadCount);
-    asp::trace("cc");
+
+    launched = true;
+
+    asp::trace("async runtime launched");
 }
 
 void RuntimeImpl::runAsync(std::function<void()>&& f) {
+    std::unique_lock lock(mtx);
+
     ASP_ALWAYS_ASSERT(launched, "cannot launch a task on a Runtime that isn't running");
 
     tpool->pushTask(std::move(f));

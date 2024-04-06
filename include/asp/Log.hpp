@@ -10,7 +10,15 @@ namespace asp {
     };
 
     void setLogFunction(std::function<void(LogLevel, const std::string_view)>&& f);
-    void log(LogLevel level, const std::string_view message);
+    void doLog(LogLevel level, const std::string_view message);
+
+    inline void log(LogLevel level, const std::string_view message) {
+    #ifndef ASP_DEBUG
+        // disable trace logs in release
+        if (level == LogLevel::Trace) return;
+    #endif
+        doLog(level, message);
+    }
 
     inline void trace(const std::string_view message) {
         log(LogLevel::Trace, message);

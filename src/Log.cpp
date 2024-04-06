@@ -12,11 +12,7 @@ void setLogFunction(std::function<void(LogLevel, const std::string_view)>&& f) {
     LOG_FUNC = std::move(f);
 }
 
-void log(LogLevel level, const std::string_view message) {
-#ifndef ASP_DEBUG
-    // disable trace logs in release
-    if (level == LogLevel::Trace) return;
-#endif
+void doLog(LogLevel level, const std::string_view message) {
     LOG_FUNC(level, message);
 }
 
