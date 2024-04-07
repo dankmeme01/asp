@@ -140,7 +140,7 @@ public:
         bool alreadyUnlocked = false;
     };
 
-    Guard lock() {
+    Guard lock() const {
         return Guard(*this);
     }
 private:
