@@ -9,11 +9,13 @@ ThreadPool::ThreadPool(size_t tc) {
         thread.setLoopFunction([this, i = i] {
             auto& worker = this->workers.at(i);
 
-            auto task = this->taskQueue.pop();
+            auto task = this->taskQueue.popTimeout(std::chrono::milliseconds(10));
+
+            if (!task) return;
 
             worker.doingWork = true;
 
-            task();
+            task.value()();
 
             worker.doingWork = false;
         });
@@ -34,7 +36,17 @@ ThreadPool::ThreadPool(size_t tc) {
 ThreadPool::~ThreadPool() {
     try {
         this->join();
-        this->workers.clear();
+
+        // stop all threads and wait for them to terminate
+        for (auto& worker : workers) {
+            worker.thread.stop();
+        }
+
+        for (auto& worker : workers) {
+            worker.thread.join();
+        }
+
+        workers.clear();
     } catch (const std::exception& e) {
         asp::log(LogLevel::Error, std::string("failed to cleanup thread pool: ") + e.what());
     }
