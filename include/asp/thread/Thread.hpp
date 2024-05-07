@@ -64,6 +64,10 @@ public:
                     throw;
                 }
             }
+
+            if (_storage->onTermination) {
+                _storage->onTermination();
+            }
         }, std::forward<TFuncArgs>(args)...);
     }
 
@@ -117,6 +121,16 @@ public:
         _storage->onException = f;
     }
 
+    // Set the function that will be called when the thread is about to terminate. It will be called from within the created thread.
+    void setTerminationFunction(std::function<void()>&& f) {
+        _storage->onTermination = std::move(f);
+    }
+
+    // Set the function that will be called when the thread is about to terminate. It will be called from within the created thread.
+    void setTerminationFunction(const std::function<void()>& f) {
+        _storage->onTermination = f;
+    }
+
     ~Thread() {
         if (!movedFrom && _storage != nullptr) {
             this->stopAndWait();
@@ -128,6 +142,7 @@ private:
         sync::AtomicFlag _stopped;
         TFunc loopFunc;
         std::function<void()> onStart;
+        std::function<void()> onTermination;
         std::function<void(const std::exception&)> onException;
     };
 

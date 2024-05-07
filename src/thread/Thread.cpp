@@ -18,9 +18,13 @@ void Thread<>::start() {
             if (_storage->onException) {
                 _storage->onException(e);
             } else {
-                asp::log(LogLevel::Error, std::string("unhandled exception from a Thread: ") + e.what());
+                asp::log(LogLevel::Error, "unhandled exception from a Thread: {}", e.what());
                 throw;
             }
+        }
+
+        if (_storage->onTermination) {
+            _storage->onTermination();
         }
     });
 }

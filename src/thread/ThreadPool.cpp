@@ -1,9 +1,12 @@
 #include <asp/thread/ThreadPool.hpp>
 #include <asp/Log.hpp>
+#include <format>
 
 namespace asp::thread {
 
 ThreadPool::ThreadPool(size_t tc) {
+    asp::trace("Creating ThreadPool with size {}", tc);
+
     for (size_t i = 0; i < tc; i++) {
         Thread<> thread;
         thread.setLoopFunction([this, i = i] {
@@ -34,6 +37,7 @@ ThreadPool::ThreadPool(size_t tc) {
 }
 
 ThreadPool::~ThreadPool() {
+    asp::trace("Destroying ThreadPool");
     try {
         this->join();
 

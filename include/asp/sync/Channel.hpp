@@ -48,13 +48,19 @@ public:
             return std::nullopt;
         }
 
-        return doPop(queue.data);
+        return std::optional<T>(std::move(doPop(queue.data)));
     }
 
     // Blocks until messages are available, does not actually pop any messages from the channel.
     template <typename Rep, typename Period>
     void waitForMessages(std::chrono::duration<Rep, Period> timeout) {
-        
+        std::unique_lock lock(queue.mtx);
+
+        if (!queue.data.empty()) {
+            return;
+        }
+
+        cvar.wait_for(lock, timeout, [this] { return !queue.data.empty(); });
     }
 
     // Obtains the element at the front of the queue, throws if the channel is empty.
