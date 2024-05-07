@@ -4,16 +4,20 @@
 
 namespace asp {
 
-static std::function<void(LogLevel, const std::string_view)> LOG_FUNC = [](LogLevel level, auto message) {
-    std::cerr << "[asp] " << message << std::endl;
-};
-
 void setLogFunction(std::function<void(LogLevel, const std::string_view)>&& f) {
-    LOG_FUNC = std::move(f);
+    getLogFunction() = std::move(f);
+}
+
+std::function<void(LogLevel, const std::string_view)>& getLogFunction() {
+    static std::function<void(LogLevel, const std::string_view)> func = [](LogLevel level, auto message) {
+        std::cerr << "[asp] " << message << std::endl;
+    };
+
+    return func;
 }
 
 void doLog(LogLevel level, const std::string_view message) {
-    LOG_FUNC(level, message);
+    getLogFunction()(level, message);
 }
 
 }
