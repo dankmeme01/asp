@@ -1,11 +1,14 @@
 #include <asp/thread/ThreadPool.hpp>
 #include <asp/Log.hpp>
-#include <format>
 
 namespace asp::thread {
 
 ThreadPool::ThreadPool(size_t tc) {
+#ifdef ASP_ENABLE_FORMAT
     asp::trace("Creating ThreadPool with size {}", tc);
+#else
+    asp::trace("Creating ThreadPool with size " + std::to_string(tc));
+#endif
 
     for (size_t i = 0; i < tc; i++) {
         Thread<> thread;

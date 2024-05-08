@@ -3,7 +3,10 @@
 #include "config.hpp"
 #include <functional>
 #include <string_view>
-#include <format>
+
+#ifdef ASP_ENABLE_FORMAT
+# include <format>
+#endif
 
 namespace asp {
     enum class LogLevel {
@@ -23,6 +26,11 @@ namespace asp {
         doLog(level, message);
     }
 
+    inline void trace(const std::string_view message) {
+        log(LogLevel::Trace, message);
+    }
+
+#ifdef ASP_ENABLE_FORMAT
     template <class... Args>
     inline void log(LogLevel level, std::format_string<Args...> fmt, Args&&... args) {
     #ifndef ASP_DEBUG
@@ -32,12 +40,9 @@ namespace asp {
         doLog(level, std::format(fmt, std::forward<Args>(args)...));
     }
 
-    inline void trace(const std::string_view message) {
-        log(LogLevel::Trace, message);
-    }
-
     template <class... Args>
     inline void trace(std::format_string<Args...> fmt, Args&&... args) {
         log(LogLevel::Trace, fmt, std::forward<Args>(args)...);
     }
+#endif
 }
