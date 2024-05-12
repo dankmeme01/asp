@@ -6,6 +6,8 @@
 
 #ifdef ASP_ENABLE_FORMAT
 # include <format>
+#else
+# include <string>
 #endif
 
 namespace asp {
