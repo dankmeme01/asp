@@ -58,7 +58,15 @@ public:
             return mtx.data;
         }
 
+        const Inner& operator*() const {
+            return mtx.data;
+        }
+
         Inner* operator->() {
+            return &mtx.data;
+        }
+
+        const Inner* operator->() const {
             return &mtx.data;
         }
 
